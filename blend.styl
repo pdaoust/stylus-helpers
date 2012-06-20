@@ -14,10 +14,10 @@
  * 			multiply: darken colour1 by colour2
  * 			screen: lighten colour1 by colour2
  * */
-blend(colour1, colour2, amount = false, blendmode = 'alpha') {
+blend(colour1, colour2, amount = false, blendmode = 'normal') {
 
 	// function for clipping a calculated to within the 0 - 1 range
-	clipcolour (colour) {
+	clipcolour(colour) {
 		if colour < 0 {
 			0;
 		}
@@ -25,6 +25,83 @@ blend(colour1, colour2, amount = false, blendmode = 'alpha') {
 			1;
 		}
 	}
+
+	// blending mode calculations
+	// commonly used calculation - for calculating a premultiplied colour with
+	// its complementary alpha
+	comp(colour, alpha) {
+		colour * (1 - alpha);
+	}
+	multiply(colour1a, colour2a, alpha1, alpha2) {
+		colour1a * colour2a + comp(colour1a, alpha2) + comp(colour2a, alpha1);
+	}
+	screen(colour1a, colour2a, alpha1, alpha2) {
+		colour1a + colour2a - colour1a * colour2a;
+	}
+	plus(colour1a, colour2a, alpha1, alpha2) {
+		colour1a + colour2a;
+	}
+	overlay(colour1a, colour2a, alpha1, alpha2) {
+		if colour2a * 2 < alpha2 {
+			colour1a * colour2a * 2 + comp(colour1a, alpha2) + comp(colour2a, alpha1);
+		} else {
+			alpha1 * alpha2 - 2 * (alpha2 - colour2a) * (alpha1 - colour1a) + comp(colour1a, alpha2) + comp(colour2a, alpha1);
+		}
+	}
+	darken(colour1a, colour2a, alpha1, alpha2) {
+		min(colour1a * alpha2, colour2a * alpha1) + comp(colour1a, alpha2) + comp(colour2a, alpha1);
+	}
+	lighten(colour1a, colour2a, alpha1, alpha2) {
+		max(colour1a * alpha2, colour2a * alpha1) + comp(colour1a, alpha2) + comp(colour2a, alpha1);
+	}
+	color-dodge(colour1a, colour2a, alpha1, alpha2) {
+		if colour1a == alpha1 {
+			if colour2a == 0 {
+				comp(colour1a, alpha2);
+			} else {
+				alpha1 * alpha2 + comp(colour1a, alpha2) + comp(colour2a, alpha1);
+			}
+		} else {
+			min(alpha1 * alpha2, colour2a * (alpha1 / (alpha1 * alpha2 - colour1a * alpha2)));
+		}
+	}
+	color-burn(colour1a, colour2a, alpha1, alpha2) {
+		if colour1a == 0 {
+			if colour2a == alpha2 {
+				alpha1 * alpha2 + comp(colour2a, alpha1);
+			} else {
+				comp(colour2a, alpha1);
+			}
+		} else {
+			alpha1 * alpha2 - min(alpha1 * alpha2, ((alpha1 * alpha2 - colour2a * alpha1) / colour1a * alpha2)) + comp(colour1a, alpha2) + comp(colour2a, alpha1);
+		}
+	}
+	hard-light(colour1a, colour2a, alpha1, alpha2) {
+		if colour1a * 2 <= alpha1 {
+			2 * colour1a * colour2a + comp(colour1a, alpha2) + comp(colour2a, alpha1);
+		} else if 2 * colour1a > alpha1 {
+			alpha1 * alpha2 - 2 * (alpha2 - colour2a) * (alpha1 - colour1a) + comp(colour1a, alpha2) + comp(colour2a, alpha1);
+		}
+	}
+	soft-light(colour1a, colour2a, alpha1, alpha2) {
+		colour2 = (colour2a / alpha2);
+		if 2 * colour1a <= alpha1 {
+			colour2a * (alpha1 + (2 * colour1a - alpha1) * (1 - colour2)) + comp(colour1a, alpha2) + comp(colour2a, alpha1);
+		} else if 2 * colour1a > alpha1 && 4 * colour2a <= alpha2 {
+			alpha2 * (2 * colour1a - alpha1) * (16 * colour2 ** 3 - 12 * colour2 ** 2 - 3 * colour2) + colour1a - colour1a * alpha2 + colour2a;
+		} else if 2 * colour1a > alpha1 && 4 * colour2a > alpha2 {
+			alpha2 * (2 * colour1a - alpha1) * (colour2 ** 0.5 - colour2) + colour1a - colour1a * alpha2 + colour2a;
+		}
+	}
+	difference(colour1a, colour2a, alpha1, alpha2) {
+		colour1a + colour2a - 2 * min(colour1a * alpha2, colour2a * alpha1);
+	}
+	exclusion(colour1a, colour2a, alpha1, alpha2) {
+		(colour1a * alpha2 + colour2a * alpha1 - 2 * colour1a * colour2a) + comp(colour1a, alpha2) + comp(colour2a, alpha1);
+	}
+
+
+	// get 8-bit colour values and convert to floats
 	red1 = (red(colour1) / 255);
 	green1 = (green(colour1) / 255);
 	blue1 = (blue(colour1) / 255);
@@ -33,12 +110,20 @@ blend(colour1, colour2, amount = false, blendmode = 'alpha') {
 	green2 = (green(colour2) / 255);
 	blue2 = (blue(colour2) / 255);
 	alpha2 = alpha(colour2);
+
+	// if a percentage was given as an amount, convert to float
 	if amount {
 		if unit(amount) == '%' {
 			amount = unit(amount / 100, '');
 		}
 	}
-	if blendmode == 'multiply' || blendmode == 'screen' {
+
+	// if amount is empty, change it to a sensible value. That means 1 for fancy
+	// compositing modes, 0.5 for normal blending mode with an RGB value, and 1
+	// for normal mode with an RGBA value (because if an RGBA value is passed
+	// as the second colour, we can just use the alpha channel of that colour
+	// instead).
+	if blendmode != 'normal' {
 		if !amount {
 			amount = 1;
 		}
@@ -51,8 +136,9 @@ blend(colour1, colour2, amount = false, blendmode = 'alpha') {
 			}
 		}
 	}
-	// amount adjusts alpha2. If you're familiar with SVG spec, think of amount
-	// as opacity modifier.
+
+	// amount adjusts alpha2 and then is no longer used. If you're familiar with
+	// SVG spec, think of amount as opacity.
 	alpha2 = amount * alpha2;
 	message: 'alpha2' alpha2;
 
@@ -70,23 +156,43 @@ blend(colour1, colour2, amount = false, blendmode = 'alpha') {
 
 	// each blending mode takes the premultiplied RGB values, performs the
 	// blending operation, resulting in a premultiplied final value.
-	if blendmode == 'alpha' {
-	if blendmode == 'multiply' {
-		red3a = red1a * red2a + red1a * (1 - alpha2) + red2a * (1 - alpha1);
-		green3a = green1a * green2a + green1a * (1 - alpha2) + green2a * (1 - alpha1);
-		blue3a = blue1a * blue2a + blue1a * (1 - alpha2) + blue2a * (1 - alpha1);
+	red3a = blendmode(red1a, red2a, alpha1, alpha2);
+	green3a = blendmode(green1a, green2a, alpha1, alpha2);
+	blue3a = blendmode(blue1a, blue2a, alpha1, alpha2);
+	/*if blendmode == 'multiply' {
+		red3a = multiply(red1a, red2a, alpha1, alpha2);
+		green3a = multiply(green1a, green2a, alpha1, alpha2);
+		blue3a = multiply(blue1a, blue2a, alpha1, alpha2);
 	} else if blendmode == 'screen' {
-		red3a = red1a + red2a - red1a * red2a;
-		green3a = green1a + green2a - green1a * green2a;
-		blue3a = blue1a + blue2a - blue1a * blue2a;
+		red3a = screen(red1a, red2a);
+		green3a = screen(green1a, green2a);
+		blue3a = screen(blue1a, blue2a);
 	} else if blendmode == 'plus' {
-
+		red3a = plus(red1a, red2a);
+		green3a = plus(green1a, green2a);
+		blue3a = plus(blue1a, blue2a);
+	} else if blendmode == 'overlay' {
+		red3a = overlay(red1a, red2a, alpha1, alpha2);
+		green3a = overlay(green1a, green2a, alpha1, alpha2);
+		blue3a = overlay(blue1a, blue2a, alpha1, alpha2);
+	} else if blendmode == 'darken' {
+		red3a = darken(red1a, red2a, alpha1, alpha2);
+		green3a = darken(green1a, green2a, alpha1, alpha2);
+		blue3a = darken(blue1a, blue2a, alpha1, alpha2);
+	} else if blendmode == 'lighten' {
+		red3a = lighten(red1a, red2a, alpha1, alpha2);
+		green3a = lighten(green1a, green2a, alpha1, alpha2);
+		blue3a = lighten(blue1a, blue2a, alpha1, alpha2);
+	} else if blendmode == 'color-dodge' {
+		red3a = lighten(red1a, red2a, alpha1, alpha2);
+		green3a = lighten(green1a, green2a, alpha1, alpha2);
+		blue3a = lighten(blue1a, blue2a, alpha1, alpha2);
 	} else {
 		// default blending mode, plain ol' alpha blending
 		red3a = red2a + red1a * (1 - alpha2);
 		green3a = green2a + green1a * (1 - alpha2);
 		blue3a = blue2a + blue1a * (1 - alpha2);
-	}
+	}*/
 
 	// take premultiplied RGB values for final colour and derive actual colours
 	// by un-multiplying them by the final alpha. Then clip each.
