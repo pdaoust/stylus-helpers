@@ -1,0 +1,42 @@
+/* rhythm(fontsz, baseln, margintop, marginbottom, squash) applies a vertical
+ * rhythm to a block-level element. Arguments:
+ *
+ * 		fontsz: the font size, relative to the base font size
+ *
+ * 		baseln: the baseline grid unit that we should snap the element's
+ * 		line-height to
+ *
+ * 		margintop, marginbottom: the number of baseline units to add above and
+ * 		below the element. Note: this is *baseline units*, not multiples of the
+ * 		element's new line-height.
+ *
+ * 		squash: a float value specifying how much tolerance the line-height
+ * 		should have for squashing. 1 means the line-height will never be smaller
+ * 		than 1; <1 means it may be squashed; >1 means it must have extra
+ */
+
+rhythm(fontsz = 1em, baseln = 1.5em, margintop = 1, marginbottom = 1, squash = 1) {
+	ratio = (fontsz / baseln) * squash;
+	if ratio <= 1 { // anything from 1 baseln unit down to ½ units stays in the same baseln grid
+		lineheight = baseln / fontsz;
+		if ratio <= 0.5 { // anything ½ baseln unit and below gets two lines per baseln unit
+			newbaseln = lineheight / fontsz;
+		} else {
+			newbaseln = baseln;
+		}
+	} else {
+		if ratio <= 2 { // anything above 1 baseln unit gets 2 baseln units per line
+			ratio = 2;
+		} else if ratio <= 3 { // or even 3!
+			ratio = 3;
+		} else if ratio <= 4 { // how about 4? But not 5; that's crazy.
+			ratio = 4;
+		}
+		lineheight = baseln * ratio / fontsz;
+		newbaseln = baseln / fontsz;
+	}
+	font-size: fontsz;
+	line-height: lineheight;
+	margin-top: unit(newbaseln * margintop, em);
+	margin-bottom: unit(newbaseln * marginbottom, em);
+}

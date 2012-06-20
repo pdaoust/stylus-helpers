@@ -1,0 +1,98 @@
+/* blend one colour with another -- gives you compositing modes! Especially
+ * useful for creating opaque colours. Arguments:
+ *
+ * 		colour1: the base colour
+ *
+ * 		colour2: the colour to add to the base colour
+ *
+ * 		amount: the alpha of colour2; can be a float or percentage. If blank or
+ * 		false, it'll try to get the alpha value from colour2, and lastly,
+ * 		default to 50%
+ *
+ * 		blendmode: the blending or compositing mode
+ * 			alpha: the usual
+ * 			multiply: darken colour1 by colour2
+ * 			screen: lighten colour1 by colour2
+ * */
+blend(colour1, colour2, amount = false, blendmode = 'alpha') {
+
+	// function for clipping a calculated to within the 0 - 1 range
+	clipcolour (colour) {
+		if colour < 0 {
+			0;
+		}
+		if colour > 1 {
+			1;
+		}
+	}
+	red1 = (red(colour1) / 255);
+	green1 = (green(colour1) / 255);
+	blue1 = (blue(colour1) / 255);
+	alpha1 = alpha(colour1);
+	red2 = (red(colour2) / 255);
+	green2 = (green(colour2) / 255);
+	blue2 = (blue(colour2) / 255);
+	alpha2 = alpha(colour2);
+	if amount {
+		if unit(amount) == '%' {
+			amount = unit(amount / 100, '');
+		}
+	}
+	if blendmode == 'multiply' || blendmode == 'screen' {
+		if !amount {
+			amount = 1;
+		}
+	} else {
+		if !amount || amount == 1 {
+			if alpha2 > 0 && alpha2 < 1 {
+				amount = 1;
+			} else {
+				amount = .5;
+			}
+		}
+	}
+	// amount adjusts alpha2. If you're familiar with SVG spec, think of amount
+	// as opacity modifier.
+	alpha2 = amount * alpha2;
+	message: 'alpha2' alpha2;
+
+	// calculate final alpha, which is the same for any blending mode
+	alpha3 = alpha1 + alpha2 - alpha1 * alpha2;
+	message: 'alpha3' alpha3;
+
+	// premultiply RGB values for each colour, cf. Porter/Duff
+	red1a = red1 * alpha1;
+	green1a = green1 * alpha1;
+	blue1a = blue1 * alpha1;
+	red2a = red2 * alpha2;
+	green2a = green2 * alpha2;
+	blue2a = blue2 * alpha2;
+
+	// each blending mode takes the premultiplied RGB values, performs the
+	// blending operation, resulting in a premultiplied final value.
+	if blendmode == 'alpha' {
+	if blendmode == 'multiply' {
+		red3a = red1a * red2a + red1a * (1 - alpha2) + red2a * (1 - alpha1);
+		green3a = green1a * green2a + green1a * (1 - alpha2) + green2a * (1 - alpha1);
+		blue3a = blue1a * blue2a + blue1a * (1 - alpha2) + blue2a * (1 - alpha1);
+	} else if blendmode == 'screen' {
+		red3a = red1a + red2a - red1a * red2a;
+		green3a = green1a + green2a - green1a * green2a;
+		blue3a = blue1a + blue2a - blue1a * blue2a;
+	} else if blendmode == 'plus' {
+
+	} else {
+		// default blending mode, plain ol' alpha blending
+		red3a = red2a + red1a * (1 - alpha2);
+		green3a = green2a + green1a * (1 - alpha2);
+		blue3a = blue2a + blue1a * (1 - alpha2);
+	}
+
+	// take premultiplied RGB values for final colour and derive actual colours
+	// by un-multiplying them by the final alpha. Then clip each.
+	red3 = clipcolour(red3a / alpha3);
+	green3 = clipcolour(green3a / alpha3);
+	blue3 = clipcolour(blue3a / alpha3);
+
+	color: rgba(round(red3 * 255), round(green3 * 255), round(blue3 * 255), alpha3);
+}

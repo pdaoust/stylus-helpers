@@ -1,0 +1,20 @@
+/* em2px and px2em both take a unit and convert it back and forth based on the
+ * base font size (using 1 as default base font size). These functions do not
+ * respect the user agent's font size, which is good, because it means the
+ * entire site scales up and down like em-based layouts should. */
+
+em2px(a) {
+	fontsize = basefont is defined ? basefont : 1;
+	if unit(fontsize) == '%' {
+		fontsize = fontsize / 100;
+	}
+	unit(a * 16 * fontsize, px);
+}
+
+px2em(a) {
+	fontsize = basefont is defined ? basefont : 1;
+	if unit(fontsize) == '%' {
+		fontsize = fontsize / 100;
+	}
+	unit((a / 16 / fontsize), em);
+}
