@@ -1,0 +1,139 @@
+@import 'blend';
+
+red = #F30;
+green = #3F0;
+blue = #03f;
+magenta = #C3C;
+
+.redbg {
+	background-color: red;
+}
+.red50bg {
+	background-color: rgba(red, .5);
+}
+.redgreen-b {
+	color: rgba(green, .5);
+}
+.redgreen-s {
+	color: blend(red, green);
+}
+.redgreen25-b {
+	color: rgba(green, .25);
+}
+.redgreen25-s {
+	color: blend(red, green, .25);
+}
+.redgreen75-b {
+	color: rgba(green, .75);
+}
+.redgreen75-s {
+	color: blend(red, green, .75);
+}
+.mult-redgreen {
+	color: blend(red, green, false, multiply);
+}
+.mult-redgreen50 {
+	color: blend(red, green, .5, multiply);
+}
+.mult-redblue {
+	color: blend(red, blue, false, multiply);
+}
+.mult-redblue50 {
+	color: blend(red, blue, .5, multiply);
+}
+.mult-redmagenta {
+	color: blend(red, magenta, false, multiply);
+}
+.mult-redmagenta50 {
+	color: blend(red, magenta, .5, multiply);
+}
+.screen-redgreen {
+	color: blend(red, green, false, screen);
+}
+.screen-redgreen50 {
+	color: blend(red, green, .5, screen);
+}
+.screen-redblue {
+	color: blend(red, blue, false, screen);
+}
+.screen-redblue50 {
+	color: blend(red, blue, .5, screen);
+}
+.gradient-normal-greenmagenta {
+	background-image: -webkit-linear-gradient(top left, blend(red, green, .5, normal), blend(red, blend(green, magenta), .5, normal), blend(red, magenta, .5, normal));
+}
+.gradient-normal-whiteblack {
+	background-image: -webkit-linear-gradient(top left, blend(red, white, .5, normal), blend(red, blend(white, black), .5, normal), blend(red, black, .5, normal));
+}
+.gradient-mult-greenmagenta {
+	background-image: -webkit-linear-gradient(top left, blend(red, green, .5, multiply), blend(red, blend(white, black), .5, multiply), blend(red, magenta, .5, multiply));
+}
+.gradient-mult-whiteblack {
+	background-image: -webkit-linear-gradient(top left, blend(red, white, .5, multiply), blend(red, blend(white, black), .5, multiply), blend(red, black, .5, multiply));
+}
+.gradient-screen-greenmagenta {
+	background-image: -webkit-linear-gradient(top left, blend(red, green, .5, screen), blend(red, blend(green, magenta), .5, screen), blend(red, magenta, .5, screen));
+}
+.gradient-screen-whiteblack {
+	background-image: -webkit-linear-gradient(top left, blend(red, white, .5, screen), blend(red, blend(white, black), .5, screen), blend(red, black, .5, screen));
+}
+.gradient-plus-greenmagenta {
+	background-image: -webkit-linear-gradient(top left, blend(red, green, .5, plus), blend(red, blend(green, magenta), .5, plus), blend(red, magenta, .5, plus));
+}
+.gradient-plus-whiteblack {
+	background-image: -webkit-linear-gradient(top left, blend(red, white, .5, plus), blend(red, blend(white, black), .5, plus), blend(red, black, .5, plus));
+}
+.gradient-overlay-greenmagenta {
+	background-image: -webkit-linear-gradient(top left, blend(red, green, .5, overlay), blend(red, blend(green, magenta), .5, overlay), blend(red, magenta, .5, overlay));
+}
+.gradient-overlay-whiteblack {
+	background-image: -webkit-linear-gradient(top left, blend(red, white, .5, overlay), blend(red, blend(white, black), .5, overlay), blend(red, black, .5, overlay));
+}
+.gradient-darken-greenmagenta {
+	background-image: -webkit-linear-gradient(top left, blend(red, green, .5, darken), blend(red, blend(green, magenta), .5, darken), blend(red, magenta, .5, darken));
+}
+.gradient-darken-whiteblack {
+	background-image: -webkit-linear-gradient(top left, blend(red, white, .5, darken), blend(red, blend(white, black), .5, darken), blend(red, black, .5, darken));
+}
+.gradient-lighten-greenmagenta {
+	background-image: -webkit-linear-gradient(top left, blend(red, green, .5, lighten), blend(red, blend(green, magenta), .5, lighten), blend(red, magenta, .5, lighten));
+}
+.gradient-lighten-whiteblack {
+	background-image: -webkit-linear-gradient(top left, blend(red, white, .5, lighten), blend(red, blend(white, black), .5, lighten), blend(red, black, .5, lighten));
+}
+.gradient-color-dodge-greenmagenta {
+	background-image: -webkit-linear-gradient(top left, blend(red, green, .5, color-dodge), blend(red, blend(green, magenta), .5, color-dodge), blend(red, magenta, .5, color-dodge));
+}
+.gradient-color-dodge-whiteblack {
+	background-image: -webkit-linear-gradient(top left, blend(red, white, .5, color-dodge), blend(red, blend(white, black), .5, color-dodge), blend(red, black, .5, color-dodge));
+}
+.gradient-color-burn-greenmagenta {
+	background-image: -webkit-linear-gradient(top left, blend(red, green, .5, color-burn), blend(red, blend(green, magenta), .5, color-burn), blend(red, magenta, .5, color-burn));
+}
+.gradient-color-burn-whiteblack {
+	background-image: -webkit-linear-gradient(top left, blend(red, white, .5, color-burn), blend(red, blend(white, black), .5, color-burn), blend(red, black, .5, color-burn));
+}
+.gradient-hard-light-greenmagenta {
+	background-image: -webkit-linear-gradient(top left, blend(red, green, .5, hard-light), blend(red, blend(green, magenta), .5, hard-light), blend(red, magenta, .5, hard-light));
+}
+.gradient-hard-light-whiteblack {
+	background-image: -webkit-linear-gradient(top left, blend(red, white, .5, hard-light), blend(red, blend(white, black), .5, hard-light), blend(red, black, .5, hard-light));
+}
+.gradient-soft-light-greenmagenta {
+	background-image: -webkit-linear-gradient(top left, blend(red, green, .5, soft-light), blend(red, blend(green, magenta), .5, soft-light), blend(red, magenta, .5, soft-light));
+}
+.gradient-soft-light-whiteblack {
+	background-image: -webkit-linear-gradient(top left, blend(red, white, .5, soft-light), blend(red, blend(white, black), .5, soft-light), blend(red, black, .5, soft-light));
+}
+.gradient-difference-greenmagenta {
+	background-image: -webkit-linear-gradient(top left, blend(red, green, .5, difference), blend(red, blend(green, magenta), .5, difference), blend(red, magenta, .5, difference));
+}
+.gradient-difference-whiteblack {
+	background-image: -webkit-linear-gradient(top left, blend(red, white, .5, difference), blend(red, blend(white, black), .5, difference), blend(red, black, .5, difference));
+}
+.gradient-exclusion-greenmagenta {
+	background-image: -webkit-linear-gradient(top left, blend(red, green, .5, exclusion), blend(red, blend(green, magenta), .5, exclusion), blend(red, magenta, .5, exclusion));
+}
+.gradient-exclusion-whiteblack {
+	background-image: -webkit-linear-gradient(top left, blend(red, white, .5, exclusion), blend(red, blend(white, black), .5, exclusion), blend(red, black, .5, exclusion));
+}

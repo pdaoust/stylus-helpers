@@ -1,9 +1,9 @@
-/* rhythm(fontsz, baseln, margintop, marginbottom, squash) applies a vertical
+/* rhythm(fontsize, baseline, margintop, marginbottom, squash) applies a vertical
  * rhythm to a block-level element. Arguments:
  *
- * 		fontsz: the font size, relative to the base font size
+ * 		fontsize: the font size, relative to the base font size
  *
- * 		baseln: the baseline grid unit that we should snap the element's
+ * 		baseline: the baseline grid unit that we should snap the element's
  * 		line-height to
  *
  * 		margintop, marginbottom: the number of baseline units to add above and
@@ -15,28 +15,28 @@
  * 		than 1; <1 means it may be squashed; >1 means it must have extra
  */
 
-rhythm(fontsz = 1em, baseln = 1.5em, margintop = 1, marginbottom = 1, squash = 1) {
-	ratio = (fontsz / baseln) * squash;
-	if ratio <= 1 { // anything from 1 baseln unit down to ½ units stays in the same baseln grid
-		lineheight = baseln / fontsz;
-		if ratio <= 0.5 { // anything ½ baseln unit and below gets two lines per baseln unit
-			newbaseln = lineheight / fontsz;
+rhythm(fontsize = 1em, baseline = 1.5em, margintop = 1, marginbottom = 1, squash = 1) {
+	ratio = (fontsize / baseline) * squash;
+	if ratio <= 1 { // anything from 1 baseline unit down to ½ units stays in the same baseline grid
+		lineheight = baseline / fontsize;
+		if ratio <= 0.5 { // anything ½ baseline unit and below gets two lines per baseline unit
+			newbaseline = lineheight / fontsize;
 		} else {
-			newbaseln = baseln;
+			newbaseline = baseline;
 		}
 	} else {
-		if ratio <= 2 { // anything above 1 baseln unit gets 2 baseln units per line
+		if ratio <= 2 { // anything above 1 baseline unit gets 2 baseline units per line
 			ratio = 2;
 		} else if ratio <= 3 { // or even 3!
 			ratio = 3;
 		} else if ratio <= 4 { // how about 4? But not 5; that's crazy.
 			ratio = 4;
 		}
-		lineheight = baseln * ratio / fontsz;
-		newbaseln = baseln / fontsz;
+		lineheight = baseline * ratio / fontsize;
+		newbaseline = baseline / fontsize;
 	}
-	font-size: fontsz;
+	font-size: fontsize;
 	line-height: lineheight;
-	margin-top: unit(newbaseln * margintop, em);
-	margin-bottom: unit(newbaseln * marginbottom, em);
+	margin-top: unit(newbaseline * margintop, em);
+	margin-bottom: unit(newbaseline * marginbottom, em);
 }
