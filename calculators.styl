@@ -3,18 +3,22 @@
  * respect the user agent's font size, which is good, because it means the
  * entire site scales up and down like em-based layouts should. */
 
-em2px(a) {
-	fontsize = basefont is defined ? basefont : 1;
+em2px(a, base = false) {
+	fontsize = base ? base : (basefontsize is defined ? basefont : 1);
 	if unit(fontsize) == '%' {
 		fontsize = fontsize / 100;
 	}
 	unit(a * 16 * fontsize, px);
 }
 
-px2em(a) {
-	fontsize = basefont is defined ? basefont : 1;
+px2em(a, base = false) {
+	fontsize = base ? base : (basefontsize is defined ? basefont : 1);
 	if unit(fontsize) == '%' {
 		fontsize = fontsize / 100;
 	}
 	unit((a / 16 / fontsize), em);
+}
+
+html {
+	font-size: px2em(1);
 }
