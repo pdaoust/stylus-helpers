@@ -1,0 +1,39 @@
+/* equal-height grid columns, with proper vertical-align */
+
+grid-container() {
+	display: table;
+	table-layout: fixed;
+}
+
+.grid-container {
+	grid-container();
+}
+
+grid-column(span = 1, gutter = null, columns = null) {
+	if (gutter == null) {
+		if (column-gutter is defined) {
+			gutter = column-gutter;
+		} else {
+			gutter = 0;
+		}
+	}
+
+	if (columns == null) {
+		if (grid-columns is defined) {
+			columns = grid-columns;
+		} else {
+			columns = 12;
+		}
+	}
+
+	if (columns - span < 0) {
+		// adjust the column width to fit the chosen column position
+		span = columns;
+	}
+
+	display: table-cell;
+	//warn("Span: " + span + ", columns: " + columns + ", gutter: " + gutter);
+	border-box: unit((span / columns), '%') (0 (gutter / 2));
+	padding: 0;
+	vertical-align: top;
+}

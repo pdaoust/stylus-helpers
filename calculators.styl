@@ -3,22 +3,86 @@
  * respect the user agent's font size, which is good, because it means the
  * entire site scales up and down like em-based layouts should. */
 
-em2px(a, base = false) {
-	fontsize = base ? base : (basefontsize is defined ? basefont : 1);
+em2px(a, base = null) {
+	fontsize = base ? base : (basefontsize is defined ? basefontsize : 1);
 	if unit(fontsize) == '%' {
 		fontsize = fontsize / 100;
 	}
 	unit(a * 16 * fontsize, px);
 }
 
-px2em(a, base = false) {
-	fontsize = base ? base : (basefontsize is defined ? basefont : 1);
+px2em(a, base = null) {
+	fontsize = base ? base : (basefontsize is defined ? basefontsize : 1);
 	if unit(fontsize) == '%' {
 		fontsize = fontsize / 100;
 	}
 	unit((a / 16 / fontsize), em);
 }
 
-html {
-	font-size: px2em(1);
+// take a 'sides' expression (one that can be used in multi-sided declarations,
+// such as border-width) and expand it to a full four-piece list. For example:
+//
+//     4px               ->    4px 4px 4px 4px
+//     4px 0             ->    4px 0 4px 0
+//     4px 0 2px         ->    4px 0 2px 0
+//     4px 0 2px -1em    ->    4px 0 2px -1em
+
+expand-sides-4(sides) {
+	top = right = bottom = left = sides[0];
+
+	if (sides[1] is not null) {
+		right = left = sides[1];
+	}
+	if (sides[2] is not null) {
+		bottom = sides[2];
+	}
+	if (sides[3] is not null) {
+		left = sides[3];
+	}
+
+	(top right bottom left);
+}
+
+// the same thing, only with two-sided values (one side and its complement)
+expand-sides-2(sides) {
+	primary = complement = sides[0];
+
+	if (sides[1] is not null) {
+		complement = sides[1]
+	}
+
+	(primary complement);
+}
+
+// and a convenience function for the two, whose default is 4, cuz that's gonna
+// be used more often (in fact, I can't think of a two-sided value in CSS; this
+// would be used mostly in mixins)
+expand-sides(sides, arity = 4) {
+	if arity == 2 {
+		expand-sides-2(sides);
+	} else if arity == 4 {
+		expand-sides-4(sides);
+	}
+}
+
+position-order(position) {
+	if (position == top) {
+		0;
+	} else if (position == right) {
+		1;
+	} else if (position == bottom) {
+		2;
+	} else if (position == left) {
+		3;
+	}
+}
+
+perpendicular-position(position) {
+	if (position in (left right)) {
+		top;
+	} else if (position in (top bottom)) {
+		left;
+	} else {
+		error("perpendicular-position: invalid direction");
+	}
 }

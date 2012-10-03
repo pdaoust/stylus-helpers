@@ -1,0 +1,118 @@
+/* collapse the top margin of the first child and the bottom margin of the second */
+/* inline-block fix for older browsers, in function and declaration form */
+.inlineblock {
+  zoom: 1;
+  display: inline;
+  display: -moz-inline-stack;
+  display: inline-block;
+}
+/* universal clearfix, in function and declaration form */
+.cf,
+.clearfix {
+  zoom: 1;
+}
+.cf:before,
+.clearfix:before,
+.cf:after,
+.clearfix:after {
+  content: "";
+  display: table;
+}
+.cf:after,
+.clearfix:after {
+  clear: both;
+}
+/* clearfix lite, for modern browsers */
+.cflite,
+.clearfixlite {
+  overflow: hidden;
+}
+/* shade the border as if there's a light shining on it */
+/* create a pushbutton effect */
+.pushbutton {
+  position: relative;
+  top: 0.0625em;
+  left: 0;
+}
+/* replace the text in an element with an image */
+/* IE7-friendly border-box sizing -- doesn't do checking of units or anything,
+ * so make sure all your amounts are either the same unit or auto or 0 */
+/* Alignment */
+.alignleft {
+  float: left;
+  margin-right: baselinesize;
+}
+.alignright {
+  float: right;
+  margin-left: baselinesize;
+}
+.aligncenter {
+  clear: both;
+  display: block;
+  margin: 0 auto;
+}
+/* Text meant only for screen readers and crappy feature phones */
+.assistive-text {
+  position: absolute;
+  clip: rect(1px 1px 1px 1px);
+/* IE6, IE7 */
+  clip: rect(1px, 1px, 1px, 1px);
+}
+/* text that's hidden temporarily from the UI but available to screen readers */
+.accessible-hidden {
+  position: absolute;
+  clip: rect(1px 1px 1px 1px);
+/* IE6, IE7 */
+  clip: rect(1px, 1px, 1px, 1px);
+}
+/** Lists **/
+/* list without formatting */
+.list-nostyle,
+.list-float,
+.list-inlineblock,
+.list-inline {
+  list-style: none;
+  padding-left: 0;
+  margin-left: 0;
+}
+.list-float > li {
+  float: left;
+}
+/* inline-block list */
+.list-inlineblock > li {
+  zoom: 1;
+  display: inline;
+  display: -moz-inline-stack;
+  display: inline-block;
+  vertical-align: top;
+  margin-right: -0.25em;
+}
+.list-inlineblock > li:last-child {
+  margin-right: 0;
+}
+/* inline list with comma separation */
+.list-inline > li {
+  display: inline;
+}
+.list-inline > li:after {
+  content: ', ';
+}
+.list-inline > li:last-child:after {
+  content: none;
+}
+/* list with extra-beefy margins */
+.list-extra-margins li {
+  margin-bottom: baselinesize;
+}
+/* island */
+.island {
+  background-color: aside-color;
+  margin: baselinesize baseindentsize;
+  padding: baselinesize baselindentsize;
+}
+.island > :first-child {
+  margin-top: 0;
+}
+.island > :last-child {
+  margin-bottom: 0;
+}

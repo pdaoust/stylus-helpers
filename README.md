@@ -10,7 +10,7 @@ Create block styles that conform to a baseline grid or vertical rhythm. Syntax:
 
 * **`fontsize`**: a unit relative to the document's (or parent element's) base font size. Will default to 1em.
 
-* **`baseline`**: the baseline grid unit for the document. Will default to 1.5em.
+* **`baseline`**: the baseline grid unit for the document. Will default to 1.5em if not specified and a `baseline` variable is not specified anywhere in your CSS.
 
 * **`margintop`**: the top margin (in baseline units, not ems). Defaults to 1.
 
@@ -163,3 +163,5 @@ A set of mixins I find myself using regularly.
 * **`inlineblock()`** and **`.inlineblock`**: includes `hasLayout` and `-moz-inline-stack` hacks for legacy browsers.
 
 * **`clearfix()`**, **`cf()`**, **`.clearfix`**, and **`.cf`**: A cross-browser clearfix that can be relied upon to work almost anywhere. A bit heavier than other clearfixes, but works great. I also included a `cf` alias for both the function and class, for convenience.
+
+* **`shadeborder(basecolor, amount)`**: shades the border as if there's a light above -- the top is lightened and the bottom is darkened by the specified amount.

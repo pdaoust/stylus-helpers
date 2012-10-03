@@ -1,0 +1,21 @@
+/* arbitrary-width columns */
+
+@import 'grid-table';
+
+column-container() {
+	grid-container();
+}
+
+.column-container {
+	column-container();
+}
+
+/* only works well in IE7 if width units are the same as padding units */
+column(position = null) {
+	display: table-cell;
+	vertical-align: top;
+
+	.ie-lte7 & {
+		inlineblock();
+	}
+}

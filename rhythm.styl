@@ -13,30 +13,62 @@
  * 		squash: a float value specifying how much tolerance the line-height
  * 		should have for squashing. 1 means the line-height will never be smaller
  * 		than 1; <1 means it may be squashed; >1 means it must have extra
+ *
+ * 		allow-half-lines: whether or not to permit rounding to half-lines. Pretty
+ * 		important for font-sizes below baseline / 2, actually.
  */
 
-rhythm(fontsize = 1em, baseline = 1.5em, margintop = 1, marginbottom = 1, squash = 1) {
-	ratio = (fontsize / baseline) * squash;
-	if ratio <= 1 { // anything from 1 baseline unit down to ½ units stays in the same baseline grid
-		lineheight = baseline / fontsize;
-		if ratio <= 0.5 { // anything ½ baseline unit and below gets two lines per baseline unit
-			newbaseline = lineheight / fontsize;
-		} else {
-			newbaseline = baseline;
-		}
-	} else {
-		if ratio <= 2 { // anything above 1 baseline unit gets 2 baseline units per line
-			ratio = 2;
-		} else if ratio <= 3 { // or even 3!
-			ratio = 3;
-		} else if ratio <= 4 { // how about 4? But not 5; that's crazy.
-			ratio = 4;
-		}
-		lineheight = baseline * ratio / fontsize;
-		newbaseline = baseline / fontsize;
-	}
+rhythm(fontsize = 1em, baseline = null, margin = 1, squash = 1, allow-half-lines = false) {
 	font-size: fontsize;
-	line-height: lineheight;
-	margin-top: unit(newbaseline * margintop, em);
-	margin-bottom: unit(newbaseline * marginbottom, em);
+	line-height: rhythm-line-height(fontsize, baseline, squash, allow-half-lines);
+
+	baseline-size = rhythm-baseline-size(fontsize, baseline);
+
+	margin = expand-sides(margin, 2);
+	if (margin[0] != none) {
+		margin-top: unit(baseline-size * margin[0], em);
+	}
+	if (margin[1] != none) {
+		margin-bottom: unit(baseline-size * margin[1], em);
+	}
+}
+
+rhythm-ratio(fontsize = 1em, baseline = null, squash = 1, allow-half-lines = false) {
+	baseline = rhythm-get-baseline(baseline);
+	warn("Ratio: baseline " + baseline);
+
+	ratio = (fontsize / baseline) * squash;
+	warn("Ratio: fontsize " + fontsize);
+	warn("Ratio: squash " + squash);
+	warn("Ratio: ratio " + ratio);
+
+	if (allow-half-lines) {
+		ratio = ceil(ratio * 2) / 2;
+	} else {
+		ratio = ceil(ratio);
+	}
+	ratio;
+}
+
+// get the size of the baseline grid, in units relative to the given font size
+rhythm-baseline-size(fontsize = 1em, baseline = null) {
+	baseline = rhythm-get-baseline(baseline);
+	warn("rhythm-get-baseline " + baseline);
+	warn("Baseline / fontsize " + (baseline / fontsize));
+	(baseline / fontsize);
+}
+
+// fit the font into the baseline grid
+rhythm-line-height(fontsize = 1em, baseline = null, squash = 1, allow-half-lines = false) {
+	baseline = rhythm-get-baseline(baseline);
+	ratio = rhythm-ratio(fontsize, baseline, squash, allow-half-lines);
+	warn("Ratio " + ratio);
+	(baseline * ratio / fontsize);
+}
+
+// checks for a baseline size defined elsewhere in the CSS before assigning a default of 1.5
+rhythm-get-baseline(baseline = null) {
+	warn("Baseline " + baseline);
+	warn("Baselinesize " + baselinesize);
+	baseline ? baseline : (baselinesize is defined ? baselinesize : 1.5);
 }

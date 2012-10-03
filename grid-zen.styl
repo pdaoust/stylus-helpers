@@ -1,0 +1,48 @@
+/* Grid builder */
+
+.grid-container {
+	@extend .clearfix;
+}
+
+grid-container() {
+	clearfix();
+}
+
+grid-column(span = 1, position = 0, gutter = null, columns = null) {
+	if (gutter == null) {
+		if (grid-gutter is defined) {
+			gutter = grid-gutter;
+		} else {
+			gutter = 0;
+		}
+	}
+
+	if (columns == null) {
+		if (grid-columns is defined) {
+			columns = grid-columns;
+		} else {
+			columns = 12;
+		}
+	}
+
+	if (position >= columns) {
+		// clip the column-position; it shouldn't be more than columns - 1
+		position = columns - 1;
+	}
+	if (columns - position - span < 0) {
+		// adjust the column width to fit the chosen column position
+		span = columns - position;
+	}
+
+	float: left;
+	padding: 0;
+	border-box: unit(span / columns, '%') (0 (gutter / 2));
+	margin-right: 100%;
+
+	if (position > 1) {
+		margin-left: unit(position / columns, '%');
+	} else {
+		// guard against divide-by-zero
+		margin-left: 0;
+	}
+}

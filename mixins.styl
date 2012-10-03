@@ -1,3 +1,6 @@
+// handy tuple for checking whether a value is auto or null
+auto-null-check = (auto null);
+
 /* collapse the top margin of the first child and the bottom margin of the second */
 collapseinnermargins() {
 	> :first-child {
@@ -8,12 +11,16 @@ collapseinnermargins() {
 	}
 }
 
+.collapse-inner-margins {
+	collapseinnermargins();
+}
+
 /* inline-block fix for older browsers, in function and declaration form */
 inlineblock() {
+	zoom: 1;
+	display: inline;
 	display: -moz-inline-stack;
 	display: inline-block;
-	zoom: 1;
-	\*display: inline;
 }
 .inlineblock {
 	inlineblock();
@@ -33,6 +40,328 @@ clearfix() {
 	}
 }
 cf = clearfix;
-.cf, .cf {
+.cf, .clearfix {
 	clearfix();
+}
+
+/* clearfix lite, for modern browsers */
+clearfixlite() {
+	overflow: hidden;
+}
+cflite = clearfixlite;
+.cflite, .clearfixlite {
+	clearfixlite();
+}
+
+/* shade the border as if there's a light shining on it */
+shadeborder(basecolor, amount, direction = convex) {
+	if (direction == concave) {
+		border-color: darken(basecolor, amount) basecolor lighten(basecolor, amount);
+	} else {
+		border-color: lighten(basecolor, amount) basecolor darken(basecolor, amount);
+	}
+}
+
+/* create a pushbutton effect */
+pushbutton(distanceY = .0625em, distanceX = 0) {
+	position: relative;
+	top: distanceY;
+	left: distanceX;
+}
+.pushbutton {
+	pushbutton();
+}
+
+/* replace the text in an element with an image */
+imagereplace(image, width, height, positionX = false, positionY = false) {
+	inlineblock();
+	box-sizing: border-box;
+	width: width;
+	height: height;
+	padding: 0;
+	if (positionX == false) {
+		positionX = left;
+	}
+	if (positionY == false) {
+		positionY = top;
+	}
+	background: image no-repeat positionX positionY;
+	text-indent: 100%;
+	line-height: 0;
+	overflow: hidden;
+}
+
+/* IE7-friendly border-box sizing -- doesn't do checking of units or anything,
+ * so make sure all your amounts are either the same unit or auto or 0 */
+border-box(box-size, box-padding = none, box-border = none) {
+	box-sizing: border-box;
+
+	border-box-width = box-size[0];
+	width: border-box-width;
+	if (box-size[1] is not null && box-size[1] != auto) {
+		border-box-height = box-size[1];
+		height: border-box-height;
+	}
+
+	if ((length(box-padding) == 1 && box-padding != 0 && box-padding != none) || (length(box-padding) > 1)) {
+		padding: box-padding;
+		box-padding = expand-sides(box-padding, 4);
+		needs-ie7 = true;
+	} else {
+		box-padding = expand-sides(0, 4);
+	}
+
+	if ((length(box-border) == 1 && box-border != 0 && box-border != none) || (length(box-border) > 1)) {
+		border: box-border;
+		box-border = expand-sides(box-border, 4);
+		needs-ie7 = true;
+	} else {
+		box-border = expand-sides(0, 4);
+	}
+
+	if (needs-ie7 is defined) {
+		.ie-lte7 & {
+			// adjust width for IE7
+			ie7-box-width = border-box-width - box-padding[1] - box-padding[3] - box-border[1] - box-border[3];
+			if (border-box-width != ie7-box-width) {
+				width: ie7-box-width;
+			}
+
+			// adjust height for IE7, if an explicit height is set
+			if (border-box-height is defined) {
+				ie7-box-height = border-box-height - box-padding[0] - box-padding[2] - box-border[0] - box-border[2];
+				if (border-box-height != ie7-box-height) {
+					height: ie7-box-height;
+				}
+			}
+		}
+	}
+}
+
+
+/* Alignment */
+.alignleft {
+	float: left;
+	margin-right: baselinesize;
+}
+.alignright {
+	float: right;
+	margin-left: baselinesize;
+}
+.aligncenter {
+	clear: both;
+	display: block;
+	margin: 0 auto;
+}
+
+/* Text meant only for screen readers and crappy feature phones */
+assistive-text() {
+	position: absolute;
+	clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+	clip: rect(1px, 1px, 1px, 1px);
+}
+
+accessible-hidden(createVisible = true, originalPosition = static) {
+	assistive-text();
+	if (createVisible) {
+		&.visible {
+			accessible-hidden-visible(originalPosition);
+		}
+	}
+}
+
+/* text that's hidden temporarily from the UI but available to screen readers */
+.accessible-hidden {
+	accessible-hidden();
+}
+
+accessible-hidden-visible(originalPosition = static) {
+	clip: inherit;
+	position: originalPosition;
+}
+
+/** Lists **/
+
+/* list without formatting */
+.list-nostyle {
+	list-style: none;
+	padding-left: 0;
+	margin-left: 0;
+}
+
+.list-float {
+	@extend .list-nostyle;
+	& > li {
+		float: left;
+	}
+}
+
+/* inline-block list */
+list-inlineblock(fixspace = false) {
+	@extend .list-nostyle;
+	> li {
+		inlineblock();
+		vertical-align: top;
+		if (fixspace) {
+			margin-right: -.25em;
+			&:last-child {
+				margin-right: 0;
+			}
+		}
+	}
+}
+
+.list-inlineblock {
+	list-inlineblock(true);
+}
+
+/* inline list with comma separation */
+.list-inline {
+	@extend .list-nostyle;
+	& > li {
+		display: inline;
+		&:after {
+			content: ', ';
+		}
+		&:last-child {
+			&:after {
+				content: none;
+			}
+		}
+	}
+}
+
+/* list with extra-beefy margins */
+.list-extra-margins li {
+	margin-bottom: baselinesize;
+}
+
+/* island */
+.island {
+	background-color: aside-color;
+	collapseinnermargins();
+	margin: baselinesize baseindentsize;
+	padding: baselinesize baselindentsize;
+}
+
+triangle(direction = right, color = black, base = 1em, rise = auto, position = auto, whitespace-color = transparent, pseudo = auto) {
+	position: relative;
+	pseudo = triangle-get-pseudo(direction, pseudo);
+
+	&:{pseudo} {
+		direction-opposite = opposite-position(direction);
+
+		display: block;
+		position: absolute;
+		box-sizing: content-box;
+		content: " ";
+		line-height: 0;
+		width: 0;
+		height: 0;
+		border-style: solid;
+		triangle-size-block: direction base rise;
+		triangle-color-block: direction color whitespace-color;
+		triangle-position-block: direction position;
+	}
+}
+
+triangle-color-block(direction, color, whitespace-color = auto) {
+	direction-opposite = opposite-position(direction);
+
+	if (whitespace-color != auto) {
+		border-color: whitespace-color;
+	}
+	border-{direction-opposite}-color: color;
+}
+
+triangle-color(direction, color, whitespace-color = auto, pseudo = auto) {
+	pseudo = triangle-get-pseudo(direction, pseudo);
+
+	&:{pseudo} {
+		triangle-color-block(direction, color, whitespace-color);
+	}
+}
+
+triangle-get-widths(direction, base = 1em, rise = auto) {
+	border-width = base / 2;
+
+	if (rise == auto) {
+		rise = border-width;
+	}
+	triangle-width = rise;
+
+	if (direction == left) {
+		(border-width) (triangle-width) (border-width) (0);
+	} else if (direction == right) {
+		(border-width) (0) (border-width) (triangle-width);
+	} else if (direction == top) {
+		(0) (border-width) (triangle-width) (border-width);
+	} else if (direction == bottom) {
+		(triangle-width) (border-width) (0) (border-width);
+	} else {
+		error("triangle-get-widths: direction is invalid");
+	}
+}
+
+triangle-size-block(direction, base = 1em, rise = auto) {
+	widths = triangle-get-widths(direction, base, rise);
+	border-width: widths;
+}
+
+triangle-size(direction, base = 1em, rise = auto, pseudo = auto) {
+	pseudo = triangle-get-pseudo(direction, pseudo);
+
+	&:{pseudo} {
+		triangle-size-block(direction, base, rise);
+	}
+}
+
+triangle-get-position(direction, position) {
+	position-all = (auto auto auto auto);
+	perpendicular = perpendicular-position(direction);
+	direction-opposite = opposite-position(direction);
+
+	if (position != auto) {
+		position-all[0] = position[0] unless position[0] == auto;
+		position-all[1] = position[1] unless position[1] == auto;
+		position-all[2] = position[2] unless position[2] == auto;
+		position-all[3] = position[3] unless position[3] == auto;
+	}
+
+	if (position-all[position-order(perpendicular)] == auto) {
+		position-all[position-order(perpendicular)] = 0;
+	}
+	if (position-all[position-order(direction-opposite)] == auto) {
+		position-all[position-order(direction-opposite)] = 100%;
+	}
+
+	position-all;
+}
+
+triangle-position-block(direction, position) {
+	position-all = triangle-get-position(direction, position);
+
+	top: position-all[0] unless position-all[0] in auto-null-check;
+	right: position-all[1] unless position-all[1] in auto-null-check;
+	bottom: position-all[2] unless position-all[2] in auto-null-check;
+	left: position-all[3] unless position-all[3] in auto-null-check;
+}
+
+triangle-position(direction, position, pseudo = auto) {
+	pseudo = triangle-get-pseudo(direction, pseudo);
+
+	&:{pseudo} {
+		triangle-position-block(direction, position);
+	}
+}
+
+triangle-get-pseudo(direction, pseudo) {
+	if (pseudo == auto) {
+		if (direction in (top left)) {
+			pseudo = before;
+		} else if (direction in (bottom right)) {
+			pseudo = after;
+		}
+	}
+	pseudo;
 }

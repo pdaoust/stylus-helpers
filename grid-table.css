@@ -1,0 +1,11 @@
+/* equal-height grid columns, with proper vertical-align */
+.grid-container {
+  display: table;
+  table-layout: fixed;
+}
+.grid-column {
+  display: table-cell;
+  border-box: 0.08333333333333333% 0 0;
+  padding: 0;
+  vertical-align: top;
+}
